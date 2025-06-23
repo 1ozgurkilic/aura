@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="title">Aura - Giriş</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter (Modern ve Temiz bir Font) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Body için genel font ayarı */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Sayfanın kaydırmasını engeller */
+            background-color: #e2e8f0; /* Açık mod varsayılan arka plan */
+        }
+
+        /* Aura metin rengi ve butonlar için özel turkuaz renkler */
+        :root {
+            --aura-blue-dark: #008080; /* Daha koyu turkuaz (buton hover) */
+            --aura-blue-medium: #00A9A9; /* Orta turkuaz (buton normal) */
+            --aura-blue-light: #00DCDC; /* Daha açık turkuaz (Aura başlığı) */
+        }
+
+        /* Butonlar için su gibi hareket efekti */
+        .btn-water-effect {
+            position: relative;
+            overflow: hidden; /* Efektin buton sınırları içinde kalmasını sağlar */
+            background-color: var(--aura-blue-medium); /* Buton normal rengi turkuaz */
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Tüm geçişler için yumuşak animasyon */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Başlangıç gölgesi */
+            cursor: pointer; /* Fare imlecini el olarak gösterir */
+            user-select: none; /* Metin seçimi engeller */
+
+            /* Su efekti için dairesel gradyan */
+            background-image: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 100%);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 0%; /* Başlangıçta efekti gizler */
+        }
+
+        .btn-water-effect:hover {
+            background-color: var(--aura-blue-dark); /* Hover'da daha koyu turkuaz */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* Hover'da daha belirgin gölge */
+            transform: translateY(-5px) scale(1.02); /* Butonu hafifçe yukarı kaydırır ve büyütür */
+            background-size: 250%; /* Hover'da dairesel gradyanı genişleterek dalga efekti oluşturur */
+        }
+
+        /* GIF yer tutucusu için arkaplan stilini belirler */
+        .gif-placeholder {
+            background-image: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWs0a2dyNW1mdTNyMXhndnZtNTl2cHpzOTJqemNwMmp5YjRucG52dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41lFiBrHIPUuxscg/giphy.gif'); /* Turkuaz tonlarında yer tutucu */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex; /* İçindeki metni ortalamak için */
+            align-items: center;
+            justify-content: center;
+            border-radius: 2rem; /* Köşeleri yuvarlar */
+        }
+
+        /* Sol panelin arka planına hafif, soyut bir desen veya gradyan ekle */
+        .left-panel-bg-effect {
+            background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(240,248,255,0.8) 50%, rgba(255,255,255,1) 100%);
+        }
+
+        /* Modal stilleri */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Yarı saydam siyah arka plan */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; /* Diğer her şeyin üzerinde görünmesini sağlar */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 450px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6B7280;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close-button:hover {
+            color: #1F2937;
+        }
+
+        /* Dil seçici stilleri */
+        .language-switcher {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 10;
+        }
+
+        .language-switcher .current-lang-button {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e2e8f0;
+            border-radius: 9999px; /* Tamamen yuvarlak */
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .language-switcher .current-lang-button:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .language-switcher .flag-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            border: 1px solid #ccc; /* Bayraklara hafif kenarlık */
+            object-fit: cover; /* Görüntü boyutunu korur */
+        }
+
+        .language-switcher .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            min-width: 150px;
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .language-switcher .lang-dropdown.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .language-switcher .lang-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .language-switcher .lang-option:hover {
+            background-color: #f0f8ff; /* Hafif mavi arka plan */
+        }
+
+        /* Karanlık/Aydınlık mod düğmesi */
+        .theme-switcher {
+            position: fixed; /* Ekran boyutuna göre sabit kalır */
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1001;
+        }
+        .theme-switcher button {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e2e8f0;
+            border-radius: 9999px;
+            padding: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .theme-switcher button:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Karanlık mod stilleri */
+        body.dark-mode {
+            background-color: #1a1a1a; /* Koyu mod arka plan */
+            color: #e0e0e0; /* Genel metin rengi */
+        }
+
+        body.dark-mode .left-panel {
+            background: radial-gradient(circle at top left, rgba(50,50,50,1) 0%, rgba(30,30,30,0.8) 50%, rgba(50,50,50,1) 100%);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .left-panel h1 {
+            color: #00DCDC; /* Aura başlığı için aynı turkuaz */
+        }
+        body.dark-mode .left-panel p {
+            color: #a0aec0; /* Slogan için biraz daha açık gri */
+        }
+
+        body.dark-mode .btn-water-effect {
+            background-color: var(--aura-blue-medium); /* Buton normal rengi turkuaz */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Koyu modda başlangıç gölgesi */
+        }
+
+        body.dark-mode .btn-water-effect:hover {
+            background-color: var(--aura-blue-dark); /* Koyu modda hover rengi */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); /* Koyu modda hover gölgesi */
+        }
+        
+        body.dark-mode .modal-content {
+            background-color: #282828;
+            color: #e0e0e0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode .modal-content h2 {
+            color: #e0e0e0;
+        }
+        body.dark-mode .modal-content label {
+            color: #a0aec0;
+        }
+        body.dark-mode .modal-content input[type="text"],
+        body.dark-mode .modal-content input[type="email"],
+        body.dark-mode .modal-content input[type="password"] {
+            background-color: #383838;
+            border-color: #484848;
+            color: #e0e0e0;
+        }
+        body.dark-mode .modal-content input::placeholder {
+            color: #888;
+        }
+        body.dark-mode .modal-content input[type="checkbox"] {
+            background-color: #383838;
+            border-color: #484848;
+        }
+        body.dark-mode .modal-close-button {
+            color: #a0aec0;
+        }
+        body.dark-mode .modal-close-button:hover {
+            color: #e0e0e0;
+        }
+        body.dark-mode .language-switcher .current-lang-button {
+            background: rgba(40, 40, 40, 0.9);
+            border: 1px solid #505050;
+            color: #e0e0e0;
+        }
+        body.dark-mode .language-switcher .current-lang-button:hover {
+            background: rgba(50, 50, 50, 1);
+        }
+        body.dark-mode .language-switcher .lang-dropdown {
+            background: #383838;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        body.dark-mode .language-switcher .lang-option {
+            color: #e0e0e0;
+        }
+        body.dark-mode .language-switcher .lang-option:hover {
+            background-color: #505050;
+        }
+        body.dark-mode .theme-switcher button {
+            background: rgba(40, 40, 40, 0.9);
+            border: 1px solid #505050;
+            color: #e0e0e0;
+        }
+        body.dark-mode .theme-switcher button:hover {
+            background: rgba(50, 50, 50, 1);
+        }
+
+
+        /* Mobil cihazlar için duyarlı tasarım */
+        @media (max-width: 768px) {
+            .main-layout {
+                flex-direction: column; /* Dikey hizalama */
+            }
+            .left-panel, .right-panel {
+                width: 100%; /* Tam genişlik */
+                min-height: 50vh; /* Her panelin ekranın yarısını kaplaması */
+                border-radius: 0; /* Yuvarlak kenarları kaldırır */
+            }
+            .left-panel {
+                border-bottom-left-radius: 2rem; /* Sol panelin altını yuvarlar */
+                border-bottom-right-radius: 2rem; /* Sol panelin altını yuvarlar */
+            }
+            .right-panel {
+                border-top-left-radius: 2rem; /* Sağ panelin üstünü yuvarlar */
+                border-top-right-radius: 2rem; /* Sağ panelin üstünü yuvarlar */
+            }
+            .language-switcher {
+                top: 1rem;
+                left: 1rem;
+            }
+            .theme-switcher {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex main-layout min-h-screen">
+        <!-- Sol Taraf: Aura Başlık ve Giriş/Kayıt Butonları -->
+        <div class="left-panel w-1/2 flex items-center justify-center bg-white p-8 md:rounded-l-lg shadow-2xl left-panel-bg-effect relative">
+            <!-- Dil Seçici -->
+            <div class="language-switcher">
+                <button id="currentLangButton" class="current-lang-button">
+                    <img id="currentFlag" src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" alt="Türk Bayrağı" class="flag-icon">
+                    <span id="currentLangText">Türkçe</span>
+                    <svg class="w-4 h-4 ml-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="langDropdown" class="lang-dropdown">
+                    <div class="lang-option" data-lang="tr">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" alt="Türk Bayrağı" class="flag-icon">
+                        <span>Türkçe</span>
+                    </div>
+                    <div class="lang-option" data-lang="en">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg" alt="Birleşik Krallık Bayrağı" class="flag-icon">
+                        <span>English</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h1 class="text-7xl md:text-8xl font-extrabold mb-8 tracking-tight" style="color: var(--aura-blue-light);">
+                    Aura
+                </h1>
+                <p class="text-lg text-gray-600 mb-10" data-key="main_slogan">Dijital dünyanızın merkezi.</p>
+                <div class="space-y-6">
+                    <button id="loginButton" class="btn-water-effect w-64 md:w-80 py-4 text-lg font-semibold text-white rounded-full" data-key="login_button_main">
+                        Giriş yap
+                    </button>
+                    <button id="registerButton" class="btn-water-effect w-64 md:w-80 py-4 text-lg font-semibold text-white rounded-full" data-key="register_button_main">
+                        Kayıt ol
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf: GIF Alanı -->
+        <div class="right-panel w-1/2 flex items-center justify-center md:rounded-r-lg gif-placeholder" aria-label="Aura animasyonlu arka plan">
+
+        </div>
+    </div>
+
+    <!-- Giriş Yap Modalı -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" onclick="closeModal('loginModal')">&times;</button>
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center" data-key="login_modal_title">Giriş Yap</h2>
+            <form onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label for="loginUsernameEmail" class="block text-gray-700 text-sm font-medium mb-2" data-key="login_username_email_label">Kullanıcı Adı veya e-Posta</label>
+                    <input type="text" id="loginUsernameEmail" name="username_email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-aura-blue-medium focus:border-transparent transition duration-200" required>
+                </div>
+                <div>
+                    <label for="loginPassword" class="block text-gray-700 text-sm font-medium mb-2" data-key="login_password_label">Parola</label>
+                    <input type="password" id="loginPassword" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-aura-blue-medium focus:border-transparent transition duration-200" required>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="rememberMe" name="remember_me" class="h-4 w-4 text-aura-blue-medium rounded border-gray-300 focus:ring-aura-blue-medium">
+                    <label for="rememberMe" class="ml-2 text-sm text-gray-700" data-key="login_remember_me_label">Bu cihazı hatırla</label>
+                </div>
+                <button type="submit" class="btn-water-effect w-full py-3 text-lg font-semibold text-white rounded-lg" data-key="login_button_modal">
+                    Giriş Yap
+                </button>
+                <div id="loginMessage" class="text-center mt-4 text-sm text-red-500"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kayıt Ol Modalı -->
+    <div id="registerModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" onclick="closeModal('registerModal')">&times;</button>
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center" data-key="register_modal_title">Kayıt Ol</h2>
+            <form onsubmit="handleRegister(event)" class="space-y-5">
+                <div>
+                    <label for="registerUsername" class="block text-gray-700 text-sm font-medium mb-2" data-key="register_username_label">Kullanıcı Adı</label>
+                    <input type="text" id="registerUsername" name="username" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-aura-blue-medium focus:border-transparent transition duration-200" required>
+                </div>
+                <div>
+                    <label for="registerEmail" class="block text-gray-700 text-sm font-medium mb-2" data-key="register_email_label">e-Posta</label>
+                    <input type="email" id="registerEmail" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-aura-blue-medium focus:border-transparent transition duration-200" required>
+                </div>
+                <div>
+                    <label for="registerPassword" class="block text-gray-700 text-sm font-medium mb-2" data-key="register_password_label">Şifre</label>
+                    <input type="password" id="registerPassword" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-aura-blue-medium focus:border-transparent transition duration-200" required>
+                </div>
+                <div>
+                    <label for="confirmPassword" class="block text-gray-700 text-sm font-medium mb-2" data-key="register_confirm_password_label">Şifreyi Onayla</label>
+                    <input type="password" id="confirmPassword" name="confirm_password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-aura-blue-medium focus:border-transparent transition duration-200" required>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="termsAccepted" name="terms_accepted" class="h-4 w-4 text-aura-blue-medium rounded border-gray-300 focus:ring-aura-blue-medium" required>
+                    <label for="termsAccepted" class="ml-2 text-sm text-gray-700" data-key="register_terms_label">Kullanım şartlarını onaylıyorum</label>
+                </div>
+                <button type="submit" class="btn-water-effect w-full py-3 text-lg font-semibold text-white rounded-lg" data-key="register_button_modal">
+                    Kayıt Ol
+                </button>
+                <div id="registerMessage" class="text-center mt-4 text-sm text-red-500"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Karanlık/Aydınlık Mod Butonu -->
+    <div class="theme-switcher">
+        <button id="themeToggleButton" class="p-2 text-gray-800 rounded-full focus:outline-none">
+            <i class="fas fa-sun text-xl"></i> <!-- Varsayılan olarak güneş ikonunu göster -->
+        </button>
+    </div>
+
+    <script>
+        // Dil çevirileri için nesne
+        const translations = {
+            tr: {
+                title: "Aura - Giriş",
+                main_slogan: "Dijital dünyanızın merkezi.",
+                login_button_main: "Giriş yap",
+                register_button_main: "Kayıt ol",
+                login_modal_title: "Giriş Yap",
+                login_username_email_label: "Kullanıcı Adı veya e-Posta",
+                login_password_label: "Parola",
+                login_remember_me_label: "Bu cihazı hatırla",
+                login_button_modal: "Giriş Yap",
+                login_message_fill_all: "Lütfen tüm alanları doldurun.",
+                register_modal_title: "Kayıt Ol",
+                register_username_label: "Kullanıcı Adı",
+                register_email_label: "e-Posta",
+                register_password_label: "Şifre",
+                register_confirm_password_label: "Şifreyi Onayla",
+                register_terms_label: "Kullanım şartlarını onaylıyorum",
+                register_button_modal: "Kayıt Ol",
+                register_message_password_match: "Şifreler eşleşmiyor!",
+                register_message_terms_agree: "Kullanım şartlarını onaylamalısınız!",
+                register_message_fill_all: "Lütfen tüm alanları doldurun ve şartları onaylayın.",
+                gif_placeholder_text: "Buraya Turkuaz Tonlarında Animasyonlu GIF Eklenecek",
+                login_success_prefix: "Giriş denemesi: ",
+                login_success_remember_yes: ", beni hatırla: Evet. Başarılı!",
+                login_success_remember_no: ", beni hatırla: Hayır. Başarılı!",
+                register_success_prefix: "Kayıt denemesi: ",
+                register_success_suffix: ". Başarılı!"
+            },
+            en: {
+                title: "Aura - Login",
+                main_slogan: "Your digital world's hub.",
+                login_button_main: "Log in",
+                register_button_main: "Sign up",
+                login_modal_title: "Log In",
+                login_username_email_label: "Username or Email",
+                login_password_label: "Password",
+                login_remember_me_label: "Remember this device",
+                login_button_modal: "Log In",
+                login_message_fill_all: "Please fill in all fields.",
+                register_modal_title: "Sign Up",
+                register_username_label: "Username",
+                register_email_label: "Email",
+                register_password_label: "Password",
+                register_confirm_password_label: "Confirm Password",
+                register_terms_label: "I agree to the terms of use",
+                register_button_modal: "Sign Up",
+                register_message_password_match: "Passwords do not match!",
+                register_message_terms_agree: "You must agree to the terms of use!",
+                register_message_fill_all: "Please fill in all fields and agree to the terms.",
+                gif_placeholder_text: "Animated GIF in Turquoise Tones Will Be Added Here",
+                login_success_prefix: "Login attempt: ",
+                login_success_remember_yes: ", remember me: Yes. Successful!",
+                login_success_remember_no: ", remember me: No. Successful!",
+                register_success_prefix: "Registration attempt: ",
+                register_success_suffix: ". Successful!"
+            }
+        };
+
+        let currentLang = localStorage.getItem('auraLang') || 'tr'; // Varsayılan dil Türkçe
+
+        // Metinleri güncelleyen fonksiyon
+        function updateTextContent() {
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    element.textContent = translations[currentLang][key];
+                }
+            });
+            // title özel olarak ayarlanır
+            document.title = translations[currentLang].title;
+            // Güncel bayrak metni güncellenir
+            document.getElementById('currentLangText').textContent = currentLang === 'tr' ? 'Türkçe' : 'English';
+            document.getElementById('currentFlag').src = currentLang === 'tr' ? "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" : "https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg";
+            document.getElementById('currentFlag').alt = currentLang === 'tr' ? "Türk Bayrağı" : "Birleşik Krallık Bayrağı";
+        }
+
+        // Dil değiştiren fonksiyon
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('auraLang', lang); // Dili localStorage'a kaydet
+            updateTextContent();
+            closeLanguageDropdown();
+        }
+
+        // Dil seçici açma/kapatma
+        function toggleLanguageDropdown() {
+            document.getElementById('langDropdown').classList.toggle('active');
+        }
+
+        function closeLanguageDropdown() {
+            document.getElementById('langDropdown').classList.remove('active');
+        }
+
+        // Tema değiştirme fonksiyonu
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggleButton = document.getElementById('themeToggleButton');
+            const themeIcon = themeToggleButton ? themeToggleButton.querySelector('i') : null;
+
+            const isDarkMode = body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+
+            // İkonu güncelle
+            if (themeIcon) {
+                if (isDarkMode) {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                } else {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+            }
+        }
+
+        // Modalı açma fonksiyonu
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Modalı kapatma fonksiyonu
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            // Modalı kapattığında mesajı temizle
+            if (modalId === 'loginModal') {
+                document.getElementById('loginMessage').textContent = '';
+            } else if (modalId === 'registerModal') {
+                document.getElementById('registerMessage').textContent = '';
+            }
+        }
+
+        // Giriş yap formunu işleme fonksiyonu (Dummy)
+        function handleLogin(event) {
+            event.preventDefault(); // Formun varsayılan gönderimini engelle
+            const usernameEmail = document.getElementById('loginUsernameEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loginMessage = document.getElementById('loginMessage');
+
+            // Basit bir doğrulama
+            if (usernameEmail && password) {
+                loginMessage.className = 'text-center mt-4 text-sm text-green-600';
+                let message = translations[currentLang].login_success_prefix + usernameEmail;
+                if (rememberMe) {
+                    message += translations[currentLang].login_success_remember_yes;
+                } else {
+                    message += translations[currentLang].login_success_remember_no;
+                }
+                loginMessage.textContent = message;
+                // Burada gerçek giriş mantığı (API çağrısı vb.) yer alacaktır.
+                // setTimeout(() => closeModal('loginModal'), 2000); // 2 saniye sonra modalı kapat
+            } else {
+                loginMessage.className = 'text-center mt-4 text-sm text-red-500';
+                loginMessage.textContent = translations[currentLang].login_message_fill_all;
+            }
+        }
+
+        // Kayıt ol formunu işleme fonksiyonu (Dummy)
+        function handleRegister(event) {
+            event.preventDefault(); // Formun varsayılan gönderimini engelle
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const termsAccepted = document.getElementById('termsAccepted').checked;
+            const registerMessage = document.getElementById('registerMessage');
+
+            if (password !== confirmPassword) {
+                registerMessage.className = 'text-center mt-4 text-sm text-red-500';
+                registerMessage.textContent = translations[currentLang].register_message_password_match;
+                return;
+            }
+
+            if (!termsAccepted) {
+                registerMessage.className = 'text-center mt-4 text-sm text-red-500';
+                registerMessage.textContent = translations[currentLang].register_message_terms_agree;
+                return;
+            }
+
+            // Basit bir doğrulama
+            if (username && email && password && confirmPassword && termsAccepted) {
+                registerMessage.className = 'text-center mt-4 text-sm text-green-600';
+                registerMessage.textContent = translations[currentLang].register_success_prefix + username + ", " + email + translations[currentLang].register_success_suffix;
+                // Burada gerçek kayıt mantığı (API çağrısı vb.) yer alacaktır.
+                // setTimeout(() => closeModal('registerModal'), 2000); // 2 saniye sonra modalı kapat
+            } else {
+                registerMessage.className = 'text-center mt-4 text-sm text-red-500';
+                registerMessage.textContent = translations[currentLang].register_message_fill_all;
+            }
+        }
+
+        // DOM yüklendiğinde butonlara olay dinleyicileri ekle
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginButton = document.getElementById('loginButton');
+            const registerButton = document.getElementById('registerButton');
+            const currentLangButton = document.getElementById('currentLangButton');
+            const langDropdown = document.getElementById('langDropdown');
+            const themeToggleButton = document.getElementById('themeToggleButton'); // Yeni tema butonu
+
+            loginButton.addEventListener('click', () => openModal('loginModal'));
+            registerButton.addEventListener('click', () => openModal('registerModal'));
+            
+            if (currentLangButton) { // Check if element exists before adding event listener
+                currentLangButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Dropdown'ın kapanmasını engeller
+                    toggleLanguageDropdown();
+                });
+            } else {
+                console.error("Error: 'currentLangButton' element not found.");
+            }
+
+            // Dropdown dışına tıklanınca kapat
+            if (langDropdown && currentLangButton) { // Check if elements exist
+                document.addEventListener('click', (event) => {
+                    if (!langDropdown.contains(event.target) && !currentLangButton.contains(event.target)) {
+                        closeLanguageDropdown();
+                    }
+                });
+            } else {
+                console.error("Error: 'langDropdown' or 'currentLangButton' not found for global click listener.");
+            }
+
+            // Dil seçeneklerine olay dinleyicileri ekle
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', (event) => {
+                    setLanguage(event.currentTarget.getAttribute('data-lang'));
+                });
+            });
+
+            // Tema değiştirme butonu için olay dinleyicisi
+            if (themeToggleButton) {
+                themeToggleButton.addEventListener('click', toggleTheme);
+            } else {
+                console.error("Error: 'themeToggleButton' element not found.");
+            }
+
+            // Kaydedilmiş temayı yükle ve ikonunu ayarla
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (themeToggleButton) {
+                    const themeIcon = themeToggleButton.querySelector('i');
+                    if (themeIcon) {
+                        themeIcon.classList.remove('fa-sun');
+                        themeIcon.classList.add('fa-moon');
+                    }
+                }
+            } else {
+                 // Varsayılan olarak ışık modunda başlar, ikon güneştir
+                if (themeToggleButton) {
+                    const themeIcon = themeToggleButton.querySelector('i');
+                    if (themeIcon) {
+                        themeIcon.classList.remove('fa-moon');
+                        themeIcon.classList.add('fa-sun');
+                    }
+                }
+            }
+
+            // Sayfa yüklendiğinde metinleri ve dili güncelle
+            updateTextContent();
+        });
+    </script>
+</body>
+</html>
